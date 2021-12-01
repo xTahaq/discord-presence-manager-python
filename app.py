@@ -40,24 +40,32 @@ def cpMenu():
     print("CREATING A PROFILE\n")
     Profile_id = input("Please type the name (aka. id) of the profile (max 64 letters)\n>> ").strip()
     if len(Profile_id) > 64: Profile_id = Profile_id[:64]
+    for profile in data["profiles"]:
+        if profile["id"] == Profile_id:
+            input("Profile ID already exists! Please name your profile to something else. Press ENTER to continue.")
+            return cpMenu()
     Profile_AppId = input("Please type the discord application id of your presence\n>> ")
     Profile_state = input("Please type the state (first line of presence) text\n>> ")
     Profile_details = input("Please type the details (second line of presence) text\n>> ")
+    Profile_Limage = input("Please type the large image name\n>> ")
+    Profile_Ltext = input("Please type the large image text (appears when you hover over the large image)\n>> ")
+    Profile_Simage = input("Please type the small image name\n>> ")
+    Profile_Stext = input("Please type the small image text (appears when you hover over the small image)\n>> ")
     Profile_timestamp = input("Allow timestamp? (Y/N)\n>> ")
     if Profile_timestamp != "Y":
         Profile_timestamp = False
     else:
         Profile_timestamp = True
 
-    for profile in data["profiles"]:
-        if profile["id"] == Profile_id:
-            input("Profile ID already exists! Please name your profile to something else. Press ENTER to continue.")
-            cpMenu()
     data["profiles"].append({
         "id": Profile_id,
         "app_id": Profile_AppId,
         "state": Profile_state,
         "details": Profile_details,
+        "large_image": Profile_Limage,
+        "large_text": Profile_Ltext,
+        "small_image": Profile_Simage,
+        "small_text": Profile_Stext,
         "timestamp": Profile_timestamp
     })
     updateFile()
@@ -73,7 +81,7 @@ def lpMenu():
     else:
         for profile in data["profiles"]:
             if profile["id"] == opt:
-                StartPresence(profile["id"], profile["app_id"], profile["state"], profile["details"], profile["timestamp"])
+                StartPresence(profile["id"], profile["app_id"], profile["state"], profile["details"], profile["large_image"], profile["large_text"], profile["small_image"], profile["small_text"], profile["timestamp"])
         else:
             dpMenu()
 
@@ -102,21 +110,21 @@ def createName():
         updateFile()
         menu()
 
-def StartPresence(id, appid, state, details, timestamp):
+def StartPresence(id, appid, state, details, li, lt, si, st, timestamp):
     clear()
     try:
         RPC = Presence(appid, pipe=0)
         RPC.connect()
         ts = None
         if timestamp == True: ts = time.time()
-        RPC.update(state=state, details=details, start=ts)
+        RPC.update(state=state, details=details, large_image=li, large_text=lt, small_image=si, small_text=st, start=ts)
     except Exception as err:
         print("An error happened while setting up your presence. This might be because you setted it wrong (like invalid application id etc.)\n\nERROR INFO:")
         print(err)
         input("\nPress ENTER to go back to menu.")
         menu()
     else:
-        input("Connected, press ENTER to stop the presence and go back to menu.")
+        input("Connected, press ENTER to stop the presence and go back to menu. - Current profile: " + id)
         RPC.close()
         menu()
 
@@ -142,6 +150,10 @@ def listProfiles():
         print("Application ID: " + profile["app_id"])
         print("State Text: " + profile["state"])
         print("Details Text: " + profile["details"])
+        print("Large Image Name: " + profile["large_image"])
+        print("Large Image Text: " + profile["large_text"])
+        print("Small Image Name: " + profile["small_image"])
+        print("Small Image Text: " + profile["small_text"])
         print("Allow Timestamp: " + str(profile["timestamp"]))
 
         print("\n")
