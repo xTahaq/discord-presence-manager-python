@@ -8,9 +8,9 @@ import os
 import sys
 import time
 
-TESTRPC = Presence("892160344594710539", pipe=0)
-TESTRPC.connect()
-TESTRPC.update(start="1367765615", small_image="vsc")
+#TESTRPC = Presence("892160344594710539", pipe=0)
+#TESTRPC.connect()
+#TESTRPC.update(start="1367765615", small_image="vsc")
 
 with open("localprofiles.json", "r") as json_file:
     data = json.load(json_file)
@@ -18,7 +18,7 @@ with open("localprofiles.json", "r") as json_file:
 def menu(): 
     clear()
     print("--------------------------------------------\n")
-    print("---------- Rich Presence Manager -----------\n")
+    print("--- Discord Rich Presence Manager by Taha --\n")
     print("--------------------------------------------\n")
     print("Welcome, " + data["user"]["name"] + "!\n")
 
