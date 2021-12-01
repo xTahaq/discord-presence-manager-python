@@ -1,0 +1,19 @@
+{
+    "user": {
+        "name": "Taha"
+    },
+    "profiles": [
+        {
+            "id": "lol",
+            "app_id": "123456",
+            "state": "Vibing",
+            "details": "whats up",
+            "large_image": "happypicture",
+            "large_text": "This is a happy picture",
+            "small_image": "thumbsup",
+            "small_text": "This is a thumbs up image",
+            "buttons": [{"label": "A button", "url":"https://google.com"}],
+            "timestamp": true
+        }
+    ]
+}
