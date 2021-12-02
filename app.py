@@ -48,8 +48,8 @@ def cpMenu():
             return cpMenu()
     buttons = []
     Profile_AppId = input("Please type the discord application id of your presence\n>> ")
-    Profile_state = input("Please type the state (first line of presence) text\n>> ")
-    Profile_details = input("Please type the details (second line of presence) text\n>> ")
+    Profile_details = input("Please type the details (first line of presence) text\n>> ")
+    Profile_state = input("Please type the state (second line of presence) text\n>> ")
     Profile_Limage = input("Please type the large image name\n>> ")
     Profile_Ltext = input("Please type the large image text (appears when you hover over the large image)\n>> ")
     Profile_Simage = input("Please type the small image name\n>> ")
@@ -66,7 +66,7 @@ def cpMenu():
         buttons.append({"label": Profile_buttonL, "url": Profile_buttonU})
         Profile_buttonL = input("Please type the text of second button (type nothing or 'none' to skip)\n>> ")
         if Profile_buttonL != "" or Profile_buttonL != "none":
-            Profile_buttonU = input("Please type the redirect URL of first button\n>> ")
+            Profile_buttonU = input("Please type the redirect URL of second button\n>> ")
             buttons.append({"label": Profile_buttonL, "url": Profile_buttonU})
 
     data["profiles"].append({
