@@ -10,19 +10,19 @@ import time
 
 #TESTRPC = Presence("892160344594710539", pipe=0)
 #TESTRPC.connect()
-#TESTRPC.update(start="1367765615", small_image="vsc")
+#TESTRPC.update(start="1367765615", small_image="vsc", buttons=[{"label": "test", "url": "https://github.com/xtahaq"}])
 
 with open("localprofiles.json", "r") as json_file:
     data = json.load(json_file)
 
 def menu(): 
     clear()
-    print("--------------------------------------------\n")
-    print("--- Discord Rich Presence Manager by Taha --\n")
-    print("--------------------------------------------\n")
+    print("---------------------------------------------\n")
+    print("--- Discord Rich Presence Manager by Taha ---\n")
+    print("---------------------------------------------\n")
     print("Welcome, " + data["user"]["name"] + "!\n")
 
-    menuInp = input("Please choose an action by typing the number:\n1 - Create Profile\n2 - Load Profile\n3 - Delete Profile\n4 - Rename Myself\n\n>> ")
+    menuInp = input("Please choose an action by typing the number:\n1 - Create Profile\n2 - Load Profile\n3 - Delete Profile\n4 - Rename Myself\n5 - Exit\n\n>> ")
 
     if menuInp == "1":
         cpMenu()
@@ -32,6 +32,8 @@ def menu():
         dpMenu()
     elif menuInp == "4":
         createName()
+    elif menuInp == "5":
+        exit()
     else:
         menu()
     
@@ -44,6 +46,7 @@ def cpMenu():
         if profile["id"] == Profile_id:
             input("Profile ID already exists! Please name your profile to something else. Press ENTER to continue.")
             return cpMenu()
+    buttons = []
     Profile_AppId = input("Please type the discord application id of your presence\n>> ")
     Profile_state = input("Please type the state (first line of presence) text\n>> ")
     Profile_details = input("Please type the details (second line of presence) text\n>> ")
@@ -57,6 +60,15 @@ def cpMenu():
     else:
         Profile_timestamp = True
 
+    Profile_buttonL = input("Please type the text of first button (type nothing or 'none' to skip)\n>> ")
+    if Profile_buttonL != "" or Profile_buttonL != "none":
+        Profile_buttonU = input("Please type the redirect URL of first button\n>> ")
+        buttons.append({"label": Profile_buttonL, "url": Profile_buttonU})
+        Profile_buttonL = input("Please type the text of second button (type nothing or 'none' to skip)\n>> ")
+        if Profile_buttonL != "" or Profile_buttonL != "none":
+            Profile_buttonU = input("Please type the redirect URL of first button\n>> ")
+            buttons.append({"label": Profile_buttonL, "url": Profile_buttonU})
+
     data["profiles"].append({
         "id": Profile_id,
         "app_id": Profile_AppId,
@@ -66,7 +78,8 @@ def cpMenu():
         "large_text": Profile_Ltext,
         "small_image": Profile_Simage,
         "small_text": Profile_Stext,
-        "timestamp": Profile_timestamp
+        "timestamp": Profile_timestamp,
+        "buttons": buttons
     })
     updateFile()
     input("Created! Press ENTER to go back to menu.")
@@ -81,7 +94,7 @@ def lpMenu():
     else:
         for profile in data["profiles"]:
             if profile["id"] == opt:
-                StartPresence(profile["id"], profile["app_id"], profile["state"], profile["details"], profile["large_image"], profile["large_text"], profile["small_image"], profile["small_text"], profile["timestamp"])
+                StartPresence(profile["id"], profile["app_id"], profile["state"], profile["details"], profile["large_image"], profile["large_text"], profile["small_image"], profile["small_text"], profile["timestamp"], profile["buttons"])
         else:
             dpMenu()
 
@@ -110,14 +123,14 @@ def createName():
         updateFile()
         menu()
 
-def StartPresence(id, appid, state, details, li, lt, si, st, timestamp):
+def StartPresence(id, appid, state, details, li, lt, si, st, timestamp, bs):
     clear()
     try:
         RPC = Presence(appid, pipe=0)
         RPC.connect()
         ts = None
         if timestamp == True: ts = time.time()
-        RPC.update(state=state, details=details, large_image=li, large_text=lt, small_image=si, small_text=st, start=ts)
+        RPC.update(state=state, details=details, large_image=li, large_text=lt, small_image=si, small_text=st, start=ts, buttons=bs)
     except Exception as err:
         print("An error happened while setting up your presence. This might be because you setted it wrong (like invalid application id etc.)\n\nERROR INFO:")
         print(err)
@@ -155,9 +168,10 @@ def listProfiles():
         print("Small Image Name: " + profile["small_image"])
         print("Small Image Text: " + profile["small_text"])
         print("Allow Timestamp: " + str(profile["timestamp"]))
+        print("Button Objects: " + str(profile["buttons"]))
 
         print("\n")
-    if indx == 0: print("You don't have any profiles yet!")
+    if indx == 0: print("You don't have any profiles yet!\n")
 
 def show_exception_and_exit(exc_type, exc_value, tb):
     clear()
