@@ -22,17 +22,19 @@ def menu():
     print("---------------------------------------------\n")
     print("Welcome, " + data["user"]["name"] + "!\n")
 
-    menuInp = input("Please choose an action by typing the number:\n1 - Create Profile\n2 - Load Profile\n3 - Delete Profile\n4 - Rename Myself\n5 - Exit\n\n>> ")
+    menuInp = input("Please choose an action by typing the number:\n1 - Create Profile\n2 - Load Profile\n3 - Edit Profile (DEMO & WIP)\n4 - Delete Profile\n5 - Rename Myself\n6 - Exit\n\n>> ")
 
     if menuInp == "1":
         cpMenu()
     elif menuInp == "2":
         lpMenu()
     elif menuInp == "3":
-        dpMenu()
+        epChooseMenu()
     elif menuInp == "4":
-        createName()
+        dpMenu()
     elif menuInp == "5":
+        createName()
+    elif menuInp == "6":
         exit()
     else:
         menu()
@@ -83,6 +85,40 @@ def cpMenu():
     })
     updateFile()
     input("Created! Press ENTER to go back to menu.")
+    menu()
+
+def epChooseMenu():
+    clear()
+    listProfiles()
+    opt = input("Please enter the PROFILE ID to edit that profile, or type ENTER without typing anything to go back to menu.\n>> ")
+    if opt == "":
+        menu()
+    else:
+        for profile in data["profiles"]:
+            if profile["id"] == opt:
+                return epMenu(profile)
+        else:
+            epChooseMenu()
+
+def epMenu(p):
+    clear()
+    print("EDITING THE PROFILE\n\nNOTE: If you don't want to edit one, simply type * to leave it.")
+    print("Please type the edited details (first line of presence) text\nCurrent: " + p["details"])
+    Profile_details = input(">> ")
+    print("Please type the edited state (second line of presence) text\nCurrent: " + p["state"])
+    Profile_state = input(">> ")
+
+    editedProfile = {
+        "details": Profile_details,
+        "state": Profile_state
+    }
+    for i,v in editedProfile.items():
+        if v != "*":
+            p[i] = v
+
+    
+    updateFile()
+    input("Updated! Press ENTER to go back to menu.")
     menu()
 
 def lpMenu():
@@ -161,8 +197,8 @@ def listProfiles():
         print(">> PROFILE NUMBER " + str(indx) + " <<\n")
         print("Profile ID: " + profile["id"])
         print("Application ID: " + profile["app_id"])
-        print("State Text: " + profile["state"])
         print("Details Text: " + profile["details"])
+        print("State Text: " + profile["state"])
         print("Large Image Name: " + profile["large_image"])
         print("Large Image Text: " + profile["large_text"])
         print("Small Image Name: " + profile["small_image"])
