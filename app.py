@@ -10,7 +10,7 @@ import time
 
 #TESTRPC = Presence("892160344594710539", pipe=0)
 #TESTRPC.connect()
-#TESTRPC.update(start="1367765615", small_image="vsc", buttons=[{"label": "test", "url": "https://github.com/xtahaq"}])
+#TESTRPC.update(start="1367765615", end=time.time() + 180, small_image="vsc", buttons=[{"label": "test", "url": "https://github.com/xtahaq"}], details="hello")
 
 with open("localprofiles.json", "r") as json_file:
     data = json.load(json_file)
@@ -56,20 +56,28 @@ def cpMenu():
     Profile_Ltext = input("Please type the large image text (appears when you hover over the large image)\n>> ")
     Profile_Simage = input("Please type the small image name\n>> ")
     Profile_Stext = input("Please type the small image text (appears when you hover over the small image)\n>> ")
-    Profile_timestamp = input("Allow timestamp? (Y/N)\n>> ")
-    if Profile_timestamp != "Y":
+    if Profile_Limage.strip() == "": Profile_Limage = None
+    if Profile_Simage.strip() == "": Profile_Simage = None
+    if Profile_Ltext.strip() == "": Profile_Ltext = None
+    if Profile_Stext.strip() == "": Profile_Stext = None
+    Profile_timestamp = input("Do you want to show how much time elapsed? (Y/N)\n>> ")
+    Profile_endtimestamp = None
+    if Profile_timestamp != "Y" and Profile_timestamp != "y":
         Profile_timestamp = False
+        Profile_endtimestamp = input("Do you want to show end time? (it will show like '2:59 left') If you do, please type an epoch timestamp (search if you don't know). (If you don't want it, just press ENTER without typing anything)\n>> ")
+        if Profile_endtimestamp.strip() == "": Profile_endtimestamp = None
     else:
         Profile_timestamp = True
 
     Profile_buttonL = input("Please type the text of first button (type nothing or 'none' to skip)\n>> ")
-    if Profile_buttonL != "" or Profile_buttonL != "none":
+    if Profile_buttonL != "" and Profile_buttonL != "none":
         Profile_buttonU = input("Please type the redirect URL of first button\n>> ")
         buttons.append({"label": Profile_buttonL, "url": Profile_buttonU})
         Profile_buttonL = input("Please type the text of second button (type nothing or 'none' to skip)\n>> ")
-        if Profile_buttonL != "" or Profile_buttonL != "none":
+        if Profile_buttonL != "" and Profile_buttonL != "none":
             Profile_buttonU = input("Please type the redirect URL of second button\n>> ")
             buttons.append({"label": Profile_buttonL, "url": Profile_buttonU})
+    if len(buttons) == 0: buttons = None
 
     data["profiles"].append({
         "id": Profile_id,
@@ -81,6 +89,7 @@ def cpMenu():
         "small_image": Profile_Simage,
         "small_text": Profile_Stext,
         "timestamp": Profile_timestamp,
+        "endtimestamp": Profile_endtimestamp,
         "buttons": buttons
     })
     updateFile()
@@ -130,7 +139,7 @@ def lpMenu():
     else:
         for profile in data["profiles"]:
             if profile["id"] == opt:
-                StartPresence(profile["id"], profile["app_id"], profile["state"], profile["details"], profile["large_image"], profile["large_text"], profile["small_image"], profile["small_text"], profile["timestamp"], profile["buttons"])
+                StartPresence(profile["id"], profile["app_id"], profile["state"], profile["details"], profile["large_image"], profile["large_text"], profile["small_image"], profile["small_text"], profile["timestamp"], profile["endtimestamp"], profile["buttons"])
         else:
             dpMenu()
 
@@ -159,14 +168,14 @@ def createName():
         updateFile()
         menu()
 
-def StartPresence(id, appid, state, details, li, lt, si, st, timestamp, bs):
+def StartPresence(id, appid, state, details, li, lt, si, st, timestamp, endts, bs):
     clear()
     try:
         RPC = Presence(appid, pipe=0)
         RPC.connect()
         ts = None
         if timestamp == True: ts = time.time()
-        RPC.update(state=state, details=details, large_image=li, large_text=lt, small_image=si, small_text=st, start=ts, buttons=bs)
+        RPC.update(state=state, details=details, large_image=li, large_text=lt, small_image=si, small_text=st, start=ts, end=endts, buttons=bs)
     except Exception as err:
         print("An error happened while setting up your presence. This might be because you setted it wrong (like invalid application id etc.)\n\nERROR INFO:")
         print(err)
@@ -199,11 +208,12 @@ def listProfiles():
         print("Application ID: " + profile["app_id"])
         print("Details Text: " + profile["details"])
         print("State Text: " + profile["state"])
-        print("Large Image Name: " + profile["large_image"])
-        print("Large Image Text: " + profile["large_text"])
-        print("Small Image Name: " + profile["small_image"])
-        print("Small Image Text: " + profile["small_text"])
-        print("Allow Timestamp: " + str(profile["timestamp"]))
+        print("Large Image Name: " + str(profile["large_image"]))
+        print("Large Image Text: " + str(profile["large_text"]))
+        print("Small Image Name: " + str(profile["small_image"]))
+        print("Small Image Text: " + str(profile["small_text"]))
+        print("Allow Start Timestamp: " + str(profile["timestamp"]))
+        print("End Timestamp: " + str(profile["endtimestamp"]))
         print("Button Objects: " + str(profile["buttons"]))
 
         print("\n")
